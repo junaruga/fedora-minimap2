@@ -1,0 +1,119 @@
+From f648656a62a48304b8fc61ee4c5d20b2d723e295 Mon Sep 17 00:00:00 2001
+From: Jun Aruga <jaruga@redhat.com>
+Date: Sun, 9 Aug 2020 00:18:54 +0200
+Subject: [PATCH] sse2neon -> SIMDe and added non-SIMD version
+
+---
+ ksw2_extd2_sse.c | 8 ++++++++
+ ksw2_exts2_sse.c | 9 ++++++++-
+ ksw2_extz2_sse.c | 8 ++++++++
+ ksw2_ll_sse.c    | 7 ++++++-
+ 4 files changed, 30 insertions(+), 2 deletions(-)
+
+diff --git a/ksw2_extd2_sse.c b/ksw2_extd2_sse.c
+index b578274..162e9e2 100644
+--- a/ksw2_extd2_sse.c
++++ b/ksw2_extd2_sse.c
+@@ -4,15 +4,23 @@
+ #include "ksw2.h"
+ 
+ #ifdef __SSE2__
++#ifdef USE_SIMDE
++#include <simde/x86/sse2.h>
++#else
+ #include <emmintrin.h>
++#endif
+ 
+ #ifdef KSW_SSE2_ONLY
+ #undef __SSE4_1__
+ #endif
+ 
+ #ifdef __SSE4_1__
++#ifdef USE_SIMDE
++#include <simde/x86/sse4.1.h>
++#else
+ #include <smmintrin.h>
+ #endif
++#endif
+ 
+ #ifdef KSW_CPU_DISPATCH
+ #ifdef __SSE4_1__
+diff --git a/ksw2_exts2_sse.c b/ksw2_exts2_sse.c
+index e7984c6..4157e38 100644
+--- a/ksw2_exts2_sse.c
++++ b/ksw2_exts2_sse.c
+@@ -4,15 +4,22 @@
+ #include "ksw2.h"
+ 
+ #ifdef __SSE2__
++#ifdef USE_SIMDE
++#include <simde/x86/sse2.h>
++#else
+ #include <emmintrin.h>
+-
++#endif
+ #ifdef KSW_SSE2_ONLY
+ #undef __SSE4_1__
+ #endif
+ 
+ #ifdef __SSE4_1__
++#ifdef USE_SIMDE
++#include <simde/x86/sse4.1.h>
++#else
+ #include <smmintrin.h>
+ #endif
++#endif
+ 
+ #ifdef KSW_CPU_DISPATCH
+ #ifdef __SSE4_1__
+diff --git a/ksw2_extz2_sse.c b/ksw2_extz2_sse.c
+index 02bb4c2..ad19131 100644
+--- a/ksw2_extz2_sse.c
++++ b/ksw2_extz2_sse.c
+@@ -3,15 +3,23 @@
+ #include "ksw2.h"
+ 
+ #ifdef __SSE2__
++#ifdef USE_SIMDE
++#include <simde/x86/sse2.h>
++#else
+ #include <emmintrin.h>
++#endif
+ 
+ #ifdef KSW_SSE2_ONLY
+ #undef __SSE4_1__
+ #endif
+ 
+ #ifdef __SSE4_1__
++#ifdef USE_SIMDE
++#include <simde/x86/sse4.1.h>
++#else
+ #include <smmintrin.h>
+ #endif
++#endif
+ 
+ #ifdef KSW_CPU_DISPATCH
+ #ifdef __SSE4_1__
+diff --git a/ksw2_ll_sse.c b/ksw2_ll_sse.c
+index 469de52..14b9b50 100644
+--- a/ksw2_ll_sse.c
++++ b/ksw2_ll_sse.c
+@@ -1,9 +1,14 @@
+ #include <stdlib.h>
+ #include <stdint.h>
+ #include <string.h>
+-#include <emmintrin.h>
+ #include "ksw2.h"
+ 
++#ifdef USE_SIMDE
++#include <simde/x86/sse2.h>
++#else
++#include <emmintrin.h>
++#endif
++
+ #ifdef __GNUC__
+ #define LIKELY(x) __builtin_expect((x),1)
+ #define UNLIKELY(x) __builtin_expect((x),0)
+-- 
+2.26.2
+
